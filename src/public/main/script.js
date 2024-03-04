@@ -3,11 +3,8 @@ const game = document.getElementById('game')
 const soundButton = document.getElementById('sound')
 const closeButton = document.getElementById('close')
 
-let score = document.getElementById('score')
-let highScore = document.getElementById('high-score')
-
-// document.body.innerHTML = document.body.innerHTML.replace('$score', '0')
-// document.body.innerHTML = document.body.innerHTML.replace('$high-score', '0')
+document.getElementById('score').innerText = '0'
+document.getElementById('high-score').innerText = '0'
 
 class Board {
     constructor(x, y) {

@@ -45,7 +45,37 @@ h1 {
     margin-right: auto;
 }
 
+.right {
+    /* float: right; */
+    margin-left: auto;
+}
 
+.score-text {
+    margin-left: 5%;
+    font-size: 20px;
+    height: 3rem;
+    line-height: 3rem;
+}
+
+.fruit-container {
+    margin-left: 2%;
+}
+
+.trophy-container {
+    margin-left: 7.5%;
+}
+
+.sound-container {
+    margin-right: 2%;
+}
+
+.close-container {
+    margin-right: 2%;
+}
+
+.game-container {
+    transform: scale(1);
+}
 
 .game-border {
     border: 25px solid #578a34;
@@ -70,8 +100,7 @@ h1 {
     flex-direction: row;
 }
 
-.header-icons {
-    /* width: 40px; */
+.header-icon {
     height: 40px;
 }
 

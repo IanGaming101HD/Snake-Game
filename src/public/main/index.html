@@ -1,39 +1,37 @@
 <!DOCTYPE html>
 
 <html>
+    <head>
+        <title>Snake</title>
+        <link rel='stylesheet' href='./public/main/style.css'>
+    </head>
 
-<head>
-    <title>Snake</title>
-    <link rel='stylesheet' href='./public/main/style.css'>
-</head>
-
-<body>
-    <div class='container'>
-        <h1>Snake</h1>
-        <div id='game-container' class='game-container centre'>
-            <div class='header-box'>
-                <div class='header-container'>
-                    <img class='header-icons' src='./images/fruits/apple.png'>
-                    <label id='score' for='score'>$score</label>
+    <body>
+        <div class='container'>
+            <h1>Snake</h1>
+            <div id='game-container' class='game-container centre'>
+                <div class='header-box'>
+                    <div class='header-container fruit-container'>
+                        <img class='header-icon' src='./images/fruits/apple.png'>
+                        <label id='score' class='score-text' for='score'>$score</label>
+                    </div>
+                    <div class='header-container trophy-container'>
+                        <img class='header-icon' src='./images/others/trophy.png'>
+                        <label id='high-score' class='score-text' for='high-score'>$high_score</label>
+                    </div>
+                    <div class='header-container sound-container right'>
+                        <img id='sound' class='header-icon' src='./images/others/volume_up.png'>
+                        <!-- <img id='sound' class='' src='/images/others/volume_off.png' hidden> -->
+                    </div>
+                    <div class='header-container close-container'>
+                        <img id='close' class='header-icon' src='./images/others/close.png'>
+                    </div>
                 </div>
-                <div class='header-container'>
-                    <img class='header-icons' src='./images/others/trophy.png'>
-                    <label id='high-score'= for='high-score'>$high_score</label>
-                </div>
-                <div class='header-container'>
-                    <img id='sound' class='header-icons sound' src='./images/others/volume_up.png'>
-                    <!-- <img id='sound' class='' src='/images/others/volume_off.png' hidden> -->
-                </div>
-                <div class='header-container'>
-                    <img id='close' class='header-icons close' src='./images/others/close.png'>
+                <div class='game-border'>
+                    <div id='game' class='game'>
+                    </div>
                 </div>
             </div>
-            <div class='game-border'>
-                <div id='game' class='game'>
-                </div>
-            </div>
-        </div>
-        <script src='./public/main/script.js'></script>
-</body>
-
+            <script src='./public/main/script.js'></script>
+    </body>
 </html>
