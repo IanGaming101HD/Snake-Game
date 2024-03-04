@@ -1,13 +1,13 @@
-const gameContainer = document.getElementById('game_container')
+const gameContainer = document.getElementById('game-container')
 const game = document.getElementById('game')
 const soundButton = document.getElementById('sound')
 const closeButton = document.getElementById('close')
 
 let score = document.getElementById('score')
-let highScore = document.getElementById('high_score')
+let highScore = document.getElementById('high-score')
 
 // document.body.innerHTML = document.body.innerHTML.replace('$score', '0')
-// document.body.innerHTML = document.body.innerHTML.replace('$high_score', '0')
+// document.body.innerHTML = document.body.innerHTML.replace('$high-score', '0')
 
 class Board {
     constructor(x, y) {
@@ -21,7 +21,7 @@ class Board {
     }
     createBoard() {
         let alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-        let squareType = 'light_square'
+        let squareType = 'light-square'
 
         function createSquare(id, row) {
             let element = document.createElement('div')
@@ -29,12 +29,12 @@ class Board {
             element.id = id
             element.classList.add('square')
 
-            if (squareType === 'light_square') {
-                element.classList.add('light_square')
-                squareType = 'dark_square'
-            } else if (squareType === 'dark_square') {
-                element.classList.add('dark_square')
-                squareType = 'light_square'
+            if (squareType === 'light-square') {
+                element.classList.add('light-square')
+                squareType = 'dark-square'
+            } else if (squareType === 'dark-square') {
+                element.classList.add('dark-square')
+                squareType = 'light-square'
             }
             row.appendChild(element)
         }
@@ -43,7 +43,7 @@ class Board {
             let row = document.createElement('div')
 
             row.classList.add('row')
-            row.classList.add(`row_${y}`)
+            row.classList.add(`row-${y}`)
             
             game.appendChild(row)
             for (let x = 1; x <= this.x; x++) {

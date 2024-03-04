@@ -23,11 +23,11 @@ h1 {
     height: 40px;
 }
 
-.light_square {
+.light-square {
     background-color: #aad751;
 }
 
-.dark_square {
+.dark-square {
     background-color: #a2d149;
 }
 
@@ -39,34 +39,38 @@ h1 {
     text-align: center; */
 }
 
-.game_container {
-    margin-left: 37.5%;
+.centre {
+    width: min-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.game_border {
-    border: 20px solid #578a34;
-    max-width: fit-content;
+
+
+.game-border {
+    border: 25px solid #578a34;
+    width: auto;
 }
 
 .game {
     border: none;
 }
 
-.header_box {
+.header-box {
     height: 50px;
-    width: 60.5%;
+    width: auto;
     display: flex;
     flex-direction: row;
     background-color: #4a752c;
 }
 
-.header_container {
+.header-container {
     margin-top: 5px;
     display: flex;
     flex-direction: row;
 }
 
-.header_icons {
+.header-icons {
     /* width: 40px; */
     height: 40px;
 }
