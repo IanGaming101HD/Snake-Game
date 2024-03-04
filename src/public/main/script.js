@@ -49,14 +49,6 @@ class Board {
             }
         }
     }
-
-    getElement(coordinate) {
-        // let coordinates = document.getElementsByClassName('square')
-        // let element = coordinates.find((element) => elementcoordinate)
-        return document.getElementById(coordinate)
-
-        // this might be useless, remove if unnecessary
-    }
 }
 
 class Snake {
@@ -65,6 +57,7 @@ class Snake {
         this.previousDirection = 'east'
         this.direction = this.previousDirection
         this.length = 3
+        this.sequence = []
         this.createSnake()
     }
 
@@ -73,29 +66,25 @@ class Snake {
         let body = document.createElement('img')
         let head = document.createElement('img')
 
-        // [tail, body, head].forEach((bodyPart) => {
-        //     let bodyPartName = Object.keys(varObj)[0]
-
-        //     tail.src = `./images/snake/${bodyPartName}.png`
-        // }) tryna be extra, remove this if unnecessary
-
         tail.src = './images/snake/tail.png'
         body.src = './images/snake/body.png'
         head.src = './images/snake/head.png'
 
-        // tail.id =
-        // body.id = 
-        // head.id = 'head'
-
         head.classList.add('head')
-
-        tail.classList.add('body-part')
-        body.classList.add('body-part')
-        head.classList.add('body-part')
+        head.classList.add('snake-segment')
+        body.classList.add('snake-segment')
+        tail.classList.add('snake-segment')
 
         document.getElementById('b8').appendChild(tail)
         document.getElementById('c8').appendChild(body)
         document.getElementById('d8').appendChild(head)
+
+        let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
+        snakeSegments.forEach((value) => {
+            this.sequence.push({
+                [value.parentNode.id]: `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}`
+            })
+        })
     }
 
     convertToCoordinate(string) {
@@ -122,48 +111,64 @@ class Snake {
         return functions.decrement(coordinate[0]) + coordinate[1]
     }
 
-    rotate(oldDirection, newDirection) {
-        let directionMap = {
-          'south': {
-            'east': -90,
-            'west': 90
-          },
-          'east': {
-            'north': -90,
-            'south': 90
-          },
-          'west': {
-            'south': -90,
-            'north': 90
-          },
-          'north': {
-            'west': -90,
-            'east': 90
-          }
+    rotate(newDirection) {
+        let rotations = {
+            'north': 270,
+            'east': 0,
+            'south': 90,
+            'west': 180
         };
-      
-        return directionMap[oldDirection][newDirection];
-      }
+        return rotations[newDirection];
+    }
+
+    getSegment(segmentName) {
+        let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
+        return snakeSegments.find((value) => `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}` == segmentName)
+    }
 
     move() {
+        let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
         let head = document.getElementsByClassName('head')[0]
-        // console.log(head.parentElement.id)
-        let newCoordinate = document.getElementById(this[this.direction](head, this.convertToCoordinate(head.parentElement.id)))
+        let newCoordinate = document.getElementById(this[this.direction](this.convertToCoordinate(head.parentElement.id)))
 
         if (this.direction !== this.previousDirection) {
-            this.rotate(this.previousDirection, this.direction)
+            let rotation = this.rotate(this.direction)
+            document.getElementsByClassName('head')[0].style.transform = `rotate(${rotation}deg)`
+            this.previousDirection = this.direction
         }
-
-        console.log(newCoordinate, newCoordinate.children.length == 0)
 
         if (newCoordinate && newCoordinate.children.length == 0) {
             newCoordinate.appendChild(head)
+            this.sequence.push({
+                [newCoordinate.id]: ''
+            })
+            this.sequence = shiftValuesDown(this.sequence)
+            
+            Object.values(this.sequence).forEach((object) => {
+                let key = Object.keys(object)[0]
+                if (this.sequence[key] !== '') {
+                    console.log(object)
+                    console.log(this.getSegment(this.sequence[key]))
+                    document.getElementById(key).appendChild(this.getSegment(this.sequence[key]))
+                }
+            })
         } else {
+            // game over, loss, made contact with wall or itself
             alert('Game over!')
             this.board.gameOver = true
-            // lose here, made contact with wall
         }
     }
+}
+
+function shiftValuesDown(array) {
+    let temp = '';
+    let newArray = [];
+    for (let i = 0; i < array.length; i++) {
+      const currentValue = Object.values(array[i])[0];
+      newArray.push({ [Object.keys(array[i])[0]]: temp });
+      temp = currentValue;
+    }
+    return newArray;
 }
 
 class Functions {
@@ -183,7 +188,7 @@ class Functions {
             return value
         }
     }
-    
+
     decrement(value) {
         if (this.letters.includes(value)) {
             value = this.letters[this.letters.indexOf(value.toLowerCase()) - 1]
@@ -210,26 +215,38 @@ function main() {
     fullscreenButton.addEventListener('click', (event) => {
         alert('Fullscreened')
     })
-    
+
     soundButton.addEventListener('click', (event) => {
         soundEnabled = !soundEnabled
-    
+
         if (soundEnabled) {
             document.getElementById('sound').src = './images/others/volume_on.png'
         } else {
             document.getElementById('sound').src = '/images/others/volume_off.png'
         }
     })
-    
+
     closeButton.addEventListener('click', (event) => {
         alert('Closed')
     })
-    
+
     gameContainer.addEventListener('contextmenu', (event) => {
         // event.preventDefault()
     });
-    
+
+    let snakeMovement = () => {
+        snake.move()
+
+        if (board.gameOver) {
+            clearInterval(snakeInterval)
+        }
+    }
+
+    let snakeInterval = setInterval(snakeMovement, 5000)
+
     document.addEventListener('keydown', (event) => {
+        if (board.gameOver) return;
+
         let keyName = event.key;
         let oldDirection = snake.direction;
         let newDirection = getKeyDirection(keyName)
@@ -242,16 +259,16 @@ function main() {
 
         if (newDirection !== oppositeDirection[oldDirection]) {
             snake.direction = newDirection
+        } else {
+            return;
+        }
+
+        if (newDirection !== oldDirection) {
+            snake.move()
+            clearInterval(snakeInterval)
+            snakeInterval = setInterval(snakeMovement, 5000)
         }
     })
-
-    let snakeMovement = setInterval(async () => {
-        snake.move()
-
-        if (board.gameOver) {
-            clearInterval(snakeMovement)
-        }
-    }, 200)
 }
 
 function getKeyDirection(keyName) {
