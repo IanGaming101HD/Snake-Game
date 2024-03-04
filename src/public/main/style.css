@@ -69,6 +69,10 @@ h1 {
     margin-right: 2%;
 }
 
+.fullscreen-container {
+    margin-right: 2%;
+}
+
 .close-container {
     margin-right: 2%;
 }
@@ -104,9 +108,17 @@ h1 {
     height: 40px;
 }
 
+.fullscreen {
+    transform: scale(1.5);
+    cursor: pointer;
+}
+
 .sound {
     cursor: pointer;
-    margin-left: auto;
+}
+
+.close {
+    cursor: pointer;
 }
 
 label {
