@@ -35,15 +35,16 @@ class Board {
             row.appendChild(element)
         }
 
-        for (let y = 1; y <= this.y; y++) {
-            let row = document.createElement('div')
-
-            row.classList.add('row')
-            row.classList.add(`row-${y}`)
-            
-            game.appendChild(row)
-            for (let x = 1; x <= this.x; x++) {
-                createSquare(`${alphabet[y - 1]}${x}`, row)
+        for (let x = 0; x < this.x; x++) {
+            for (let y = 1; y <= this.y; y++) {
+                if (x === 0) {
+                    let row = document.createElement('div');
+                    row.classList.add('row');
+                    row.classList.add(`row-${y}`);
+                    game.appendChild(row);
+                }
+                let currentRow = document.querySelector(`.row-${y}`);
+                createSquare(`${alphabet[x]}${y}`, currentRow);
             }
         }
     }
@@ -81,6 +82,12 @@ class Snake {
         body.src = './images/snake/body.png'
         head.src = './images/snake/head.png'
         
+        // tail.id =
+        // body.id = 
+        // head.id = 'head'
+
+        head.classList.add('head')
+
         tail.classList.add('body-part')
         body.classList.add('body-part')
         head.classList.add('body-part')
@@ -90,24 +97,63 @@ class Snake {
         document.getElementById('g4').appendChild(head)
     }
 
-    north() {
-
+    north(element) {
     }
 
-    east() {
-
+    convertToCoordinate(string) {
+        return string.split('')
     }
 
-    south() {
-
+    north(coordinate) {
+        return coordinate[0] + increment(coordinate[1])
     }
 
-    west() {
+    east(coordinate) {
+        return increment(coordinate[0]) + coordinate[1]
+    }
 
+    south(coordinate) {
+        return coordinate[0] + decrement(coordinate[1])
+    }
+
+    west(coordinate) {
+        this.convertToCoordinate
+        return decrement(coordinate[0]) + coordinate[1]
     }
 
     move() {
-        this.direction
+        let head = document.getElementsByClassName('head')[0]
+        console.log(this.east(this.convertToCoordinate(head.parentElement.id)), 'hieafnjuosnhdfjinsfdjin')
+        let newCoordinate = document.getElementById(this.east(this.convertToCoordinate(head.parentElement.id)))
+        newCoordinate.appendChild(head)
+    }
+}
+
+function increment(value) {
+    this.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'y', 'z'];
+    if (value.toLowerCase().match(/[a-z]/i)) {
+        value = this.alphabet[this.alphabet.indexOf(value.toLowerCase()) + 1]
+        if (!value) {
+            value = this.alphabet[0]
+        }
+        return value
+    } else {
+        value++
+        return value
+    }
+}
+
+function decrement(value) {
+    this.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'y', 'z'];
+    if (value.toLowerCase().match(/[a-z]/i)) {
+        value = this.alphabet[this.alphabet.indexOf(value.toLowerCase()) - 1]
+        if (!value) {
+            value = this.alphabet[this.alphabet.length - 1]
+        }
+        return value
+    } else {
+        value--
+        return value
     }
 }
 
