@@ -92,9 +92,9 @@ class Snake {
         body.classList.add('body-part')
         head.classList.add('body-part')
 
-        document.getElementById('g2').appendChild(tail)
-        document.getElementById('g3').appendChild(body)
-        document.getElementById('g4').appendChild(head)
+        document.getElementById('b8').appendChild(tail)
+        document.getElementById('c8').appendChild(body)
+        document.getElementById('d8').appendChild(head)
     }
 
     north(element) {
