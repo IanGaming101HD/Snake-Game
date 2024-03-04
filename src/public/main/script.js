@@ -13,6 +13,7 @@ class Board {
         this.y = y
         this.squareType = Board.squareType
         this.createBoard()
+        this.gameOver = false
     }
 
     createBoard() {
@@ -59,10 +60,10 @@ class Board {
 }
 
 class Snake {
-    directions = ['north', 'east', 'south', 'west']
-
-    constructor() {
-        this.direction = 'east'
+    constructor(board) {
+        this.board = board
+        this.previousDirection = 'east'
+        this.direction = this.previousDirection
         this.length = 3
         this.createSnake()
     }
@@ -81,7 +82,7 @@ class Snake {
         tail.src = './images/snake/tail.png'
         body.src = './images/snake/body.png'
         head.src = './images/snake/head.png'
-        
+
         // tail.id =
         // body.id = 
         // head.id = 'head'
@@ -97,98 +98,174 @@ class Snake {
         document.getElementById('d8').appendChild(head)
     }
 
-    north(element) {
-    }
-
     convertToCoordinate(string) {
-        return string.split('')
+        return [string[0], string.slice(1)]
     }
 
     north(coordinate) {
-        return coordinate[0] + increment(coordinate[1])
+        if (!Array.isArray(coordinate) || coordinate.length !== 2) return null
+        return coordinate[0] + functions.decrement(coordinate[1])
     }
 
     east(coordinate) {
-        return increment(coordinate[0]) + coordinate[1]
+        if (!Array.isArray(coordinate) || coordinate.length !== 2) return null
+        return functions.increment(coordinate[0]) + coordinate[1]
     }
 
     south(coordinate) {
-        return coordinate[0] + decrement(coordinate[1])
+        if (!Array.isArray(coordinate) || coordinate.length !== 2) return null
+        return coordinate[0] + functions.increment(coordinate[1])
     }
 
     west(coordinate) {
-        this.convertToCoordinate
-        return decrement(coordinate[0]) + coordinate[1]
+        if (!Array.isArray(coordinate) || coordinate.length !== 2) return null
+        return functions.decrement(coordinate[0]) + coordinate[1]
     }
+
+    rotate(oldDirection, newDirection) {
+        let directionMap = {
+          'south': {
+            'east': -90,
+            'west': 90
+          },
+          'east': {
+            'north': -90,
+            'south': 90
+          },
+          'west': {
+            'south': -90,
+            'north': 90
+          },
+          'north': {
+            'west': -90,
+            'east': 90
+          }
+        };
+      
+        return directionMap[oldDirection][newDirection];
+      }
 
     move() {
         let head = document.getElementsByClassName('head')[0]
-        console.log(this.east(this.convertToCoordinate(head.parentElement.id)), 'hieafnjuosnhdfjinsfdjin')
-        let newCoordinate = document.getElementById(this.east(this.convertToCoordinate(head.parentElement.id)))
-        newCoordinate.appendChild(head)
+        // console.log(head.parentElement.id)
+        let newCoordinate = document.getElementById(this[this.direction](head, this.convertToCoordinate(head.parentElement.id)))
+
+        if (this.direction !== this.previousDirection) {
+            this.rotate(this.previousDirection, this.direction)
+        }
+
+        console.log(newCoordinate, newCoordinate.children.length == 0)
+
+        if (newCoordinate && newCoordinate.children.length == 0) {
+            newCoordinate.appendChild(head)
+        } else {
+            alert('Game over!')
+            this.board.gameOver = true
+            // lose here, made contact with wall
+        }
     }
 }
 
-function increment(value) {
-    this.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'y', 'z'];
-    if (value.toLowerCase().match(/[a-z]/i)) {
-        value = this.alphabet[this.alphabet.indexOf(value.toLowerCase()) + 1]
-        if (!value) {
-            value = this.alphabet[0]
+class Functions {
+    constructor() {
+        this.letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'y', 'z'];
+    }
+
+    increment(value) {
+        if (this.letters.includes(value)) {
+            value = this.letters[this.letters.indexOf(value.toLowerCase()) + 1]
+            if (!value) {
+                value = this.letters[0]
+            }
+            return value
+        } else {
+            value++
+            return value
         }
-        return value
-    } else {
-        value++
-        return value
+    }
+    
+    decrement(value) {
+        if (this.letters.includes(value)) {
+            value = this.letters[this.letters.indexOf(value.toLowerCase()) - 1]
+            if (!value) {
+                value = this.letters[this.letters.length - 1]
+            }
+            return value
+        } else {
+            value--
+            return value
+        }
     }
 }
 
-function decrement(value) {
-    this.alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'y', 'z'];
-    if (value.toLowerCase().match(/[a-z]/i)) {
-        value = this.alphabet[this.alphabet.indexOf(value.toLowerCase()) - 1]
-        if (!value) {
-            value = this.alphabet[this.alphabet.length - 1]
-        }
-        return value
-    } else {
-        value--
-        return value
-    }
-}
+let functions = new Functions()
 
 function main() {
     document.getElementById('score').innerText = '0'
     document.getElementById('high-score').innerText = '0'
-    
-    let board = new Board(17, 15)
-    let snake = new Snake()
 
-    setInterval(async () => {
+    let board = new Board(17, 15)
+    let snake = new Snake(board)
+
+    fullscreenButton.addEventListener('click', (event) => {
+        alert('Fullscreened')
+    })
+    
+    soundButton.addEventListener('click', (event) => {
+        soundEnabled = !soundEnabled
+    
+        if (soundEnabled) {
+            document.getElementById('sound').src = './images/others/volume_on.png'
+        } else {
+            document.getElementById('sound').src = '/images/others/volume_off.png'
+        }
+    })
+    
+    closeButton.addEventListener('click', (event) => {
+        alert('Closed')
+    })
+    
+    gameContainer.addEventListener('contextmenu', (event) => {
+        // event.preventDefault()
+    });
+    
+    document.addEventListener('keydown', (event) => {
+        let keyName = event.key;
+        let oldDirection = snake.direction;
+        let newDirection = getKeyDirection(keyName)
+        let oppositeDirection = {
+            'north': 'south',
+            'south': 'north',
+            'east': 'west',
+            'west': 'east'
+        };
+
+        if (newDirection !== oppositeDirection[oldDirection]) {
+            snake.direction = newDirection
+        }
+    })
+
+    let snakeMovement = setInterval(async () => {
         snake.move()
-    }, 1000)
+
+        if (board.gameOver) {
+            clearInterval(snakeMovement)
+        }
+    }, 200)
 }
 
-fullscreenButton.addEventListener('click', (event) => {
-    alert('Fullscreened')
-})
-
-soundButton.addEventListener('click', (event) => {
-    soundEnabled = !soundEnabled
-
-    if (soundEnabled) {
-        document.getElementById('sound').src = './images/others/volume_on.png'
-    } else {
-        document.getElementById('sound').src = '/images/others/volume_off.png'
+function getKeyDirection(keyName) {
+    let direction;
+    if (['ArrowUp', 'w'].includes(keyName)) {
+        direction = 'north'
+    } else if (['ArrowRight', 'd'].includes(keyName)) {
+        direction = 'east'
+    } else if (['ArrowDown', 's'].includes(keyName)) {
+        direction = 'south'
+    } else if (['ArrowLeft', 'a'].includes(keyName)) {
+        direction = 'west'
     }
-})
-
-closeButton.addEventListener('click', (event) => {
-    alert('Closed')
-})
-
-gameContainer.addEventListener('contextmenu', (event) => {
-    // event.preventDefault()
-});
+    return direction
+}
 
 main()
