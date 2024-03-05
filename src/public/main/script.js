@@ -57,33 +57,37 @@ class Snake {
         this.previousDirection = 'east'
         this.direction = this.previousDirection
         this.length = 3
-        this.sequence = []
+        this.sequence = {}
         this.createSnake()
     }
 
     createSnake() {
-        let tail = document.createElement('img')
-        let body = document.createElement('img')
         let head = document.createElement('img')
+        let body = document.createElement('img')
+        let tail = document.createElement('img')
 
-        tail.src = './images/snake/tail.png'
-        body.src = './images/snake/body.png'
         head.src = './images/snake/head.png'
+        body.src = './images/snake/body.png'
+        tail.src = './images/snake/tail.png'
 
         head.classList.add('head')
+
+        head.classList.add('snake')
+        body.classList.add('snake')
+        tail.classList.add('snake')
+
         head.classList.add('snake-segment')
         body.classList.add('snake-segment')
         tail.classList.add('snake-segment')
 
-        document.getElementById('b8').appendChild(tail)
-        document.getElementById('c8').appendChild(body)
         document.getElementById('d8').appendChild(head)
+        document.getElementById('c8').appendChild(body)
+        document.getElementById('b8').appendChild(tail)
 
         let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
-        snakeSegments.forEach((value) => {
-            this.sequence.push({
-                [value.parentNode.id]: `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}`
-            })
+        snakeSegments.reverse().forEach((value, index) => {
+            snakeSegments[index].classList.add(`snake-segment-${index + 1}`)
+            this.sequence[value.parentNode.id] = `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}`
         })
     }
 
@@ -123,7 +127,7 @@ class Snake {
 
     getSegment(segmentName) {
         let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
-        return snakeSegments.find((value) => `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}` == segmentName)
+        return Object.values(snakeSegments).find((value) => `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}` == segmentName)
     }
 
     move() {
@@ -139,16 +143,13 @@ class Snake {
 
         if (newCoordinate && newCoordinate.children.length == 0) {
             newCoordinate.appendChild(head)
-            this.sequence.push({
-                [newCoordinate.id]: ''
-            })
+            this.sequence[newCoordinate.id] = ''
             this.sequence = shiftValuesDown(this.sequence)
-            
-            Object.values(this.sequence).forEach((object) => {
-                let key = Object.keys(object)[0]
+
+            console.log(this.sequence)
+
+            Object.keys(this.sequence).forEach((key) => {
                 if (this.sequence[key] !== '') {
-                    console.log(object)
-                    console.log(this.getSegment(this.sequence[key]))
                     document.getElementById(key).appendChild(this.getSegment(this.sequence[key]))
                 }
             })
@@ -160,15 +161,18 @@ class Snake {
     }
 }
 
-function shiftValuesDown(array) {
+function shiftValuesDown(object) {
+    let keys = Object.keys(object);
     let temp = '';
-    let newArray = [];
-    for (let i = 0; i < array.length; i++) {
-      const currentValue = Object.values(array[i])[0];
-      newArray.push({ [Object.keys(array[i])[0]]: temp });
-      temp = currentValue;
+    let newObject = {};
+
+    for (let i = 0; i < keys.length; i++) {
+        let currentValue = object[keys[i]];
+        newObject[keys[i]] = temp;
+        temp = currentValue;
     }
-    return newArray;
+
+    return newObject;
 }
 
 class Functions {
