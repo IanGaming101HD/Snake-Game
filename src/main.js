@@ -6,6 +6,7 @@ let port = 80;
 
 app.enable('trust proxy');
 app.set('etag', false);
+app.use('/images', express.static(__dirname + '/images'))
 app.use('/public', express.static(__dirname + '/public'))
 
 app.get('/', async (req, res) => {

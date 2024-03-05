@@ -1,41 +1,40 @@
 <!DOCTYPE html>
 
 <html>
+    <head>
+        <title>Snake</title>
+        <link rel='stylesheet' href='./public/main/style.css'>
+    </head>
 
-<head>
-    <title>Snake</title>
-    <link rel='stylesheet' href='style.css'>
-</head>
-
-<body>
-    <div class='container'>
-        <h1>Snake</h1>
-        <div id='game_container' class='game_container'>
-            <div class='header_box'>
-                <div class='header_container'>
-                    <img class='header_icons' src='https://www.google.com/logos/fnbx/snake_arcade/v3/apple_00.png'>
-                    <label id='score' for='score'>$score</label>
+    <body>
+        <div class='container'>
+            <h1>Snake</h1>
+            <div id='game-container' class='game-container centre'>
+                <div class='header-box'>
+                    <div class='header-container fruit-container'>
+                        <img class='apple header-icon' src='./images/fruits/apple.png'>
+                        <label id='score' class='score-text' for='score'>$score</label>
+                    </div>
+                    <div class='header-container trophy-container'>
+                        <img class='trophy header-icon' src='./images/others/trophy.png'>
+                        <label id='high-score' class='score-text' for='high-score'>$high_score</label>
+                    </div>
+                    <div class='header-container fullscreen-container right'>
+                        <img id='fullscreen' class='fullscreen header-icon' src='./images/others/fullscreen-3.png'>
+                    </div>
+                    <div class='header-container sound-container'>
+                        <img id='sound' class='sound header-icon' src='./images/others/volume_on.png'>
+                        <!-- <img id='sound' class='sound header-icon' src='/images/others/volume_off.png' hidden> -->
+                    </div>
+                    <div class='header-container close-container'>
+                        <img id='close' class='close header-icon' src='./images/others/close.png'>
+                    </div>
                 </div>
-                <div class='header_container'>
-                    <img class='header_icons' src='https://www.google.com/logos/fnbx/snake_arcade/v3/trophy_00.png'>
-                    <label id='high_score'= for='high_score'>$high_score</label>
-                </div>
-                <div class='header_container'>
-                    <img id='sound' class='header_icons sound'
-                        src='https://www.gstatic.com/images/icons/material/system/2x/volume_up_white_24dp.png'>
-                    <!-- https://www.gstatic.com/images/icons/material/system/2x/volume_off_white_24dp.png -->
-                </div>
-                <div class='header_container'>
-                    <img id='close' class='header_icons close'
-                        src='https://www.gstatic.com/images/icons/material/system/2x/close_white_24dp.png'>
+                <div class='game-border'>
+                    <div id='game' class='game'>
+                    </div>
                 </div>
             </div>
-            <div class='game_border'>
-                <div id='game' class='game'>
-                </div>
-            </div>
-        </div>
-        <script src='script.js'></script>
-</body>
-
+            <script src='./public/main/script.js'></script>
+    </body>
 </html>

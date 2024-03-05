@@ -1,0 +1,1 @@
+at start it guaranteed goes 1 forward to east then rotates if user wants to.
