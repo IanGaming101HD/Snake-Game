@@ -12,7 +12,6 @@ class Board {
         this.gameOver = false
         this.x = x
         this.y = y
-        this.squareType = Board.squareType
         this.createBoard()
         this.generateApple('m8')
     }
