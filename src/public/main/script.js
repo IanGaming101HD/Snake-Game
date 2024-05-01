@@ -56,7 +56,7 @@ class Board {
         let highScore = document.getElementById('high-score')
         score.innerText = this.score
         highScore.innerText = this.high_score
-        
+
         if (this.gameOver) {
             let newHighScore = this.score > this.high_score ? this.score : this.high_score
             highScore.innerText = newHighScore
@@ -96,7 +96,10 @@ class Snake {
 
         let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
         snakeSegments.forEach((value, index) => {
-            this.sequence.push({ coordinate: value.parentElement, direction: this.direction })
+            this.sequence.push({
+                coordinate: value.parentElement,
+                direction: this.direction
+            })
         })
     }
 
@@ -105,7 +108,6 @@ class Snake {
         this.length += 1
         element.id = `snake-segment-${this.length}`
         element.src = './images/snake/head.png'
-        element.classList.add('head') // remove this maybe, prob not needed
         element.classList.add('snake')
         document.getElementById(coordinate).appendChild(element)
         this.head = element
@@ -176,33 +178,40 @@ class Snake {
 
     move() {
         let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
-        let head = document.getElementsByClassName('head')[0]
+        let head = document.getElementById('snake-segment-1')
         let newCoordinate = document.getElementById(this[this.direction](this.convertToCoordinate(head.parentElement.id)))
 
         if (this.direction !== this.previousDirection) {
             let rotation = this.getRotation(this.direction)
-            document.getElementsByClassName('head')[0].style.transform = `rotate(${rotation}deg)`
+            head.style.transform = `rotate(${rotation}deg)`
             this.previousDirection = this.direction
         }
 
         if (newCoordinate && (newCoordinate.children.length == 0 || Array.from(newCoordinate.children)[0].classList.contains('apple'))) {
             newCoordinate.appendChild(head)
-            this.sequence.unshift({ direction: this.direction, coordinate: newCoordinate })
+            this.sequence.unshift({
+                direction: this.direction,
+                coordinate: newCoordinate
+            })
 
             for (let x = 0; x < snakeSegments.length; x++) {
                 let rotation = this.getRotation(this.sequence[x].direction)
                 snakeSegments[x].style.transform = `rotate(${rotation}deg)`
                 this.sequence[x].coordinate.appendChild(snakeSegments[x])
 
-                if (snakeSegments.length > 1 && snakeSegments[x].src.includes('body')) {
-                    if (this.sequence[x].direction === this.sequence[x - 1].direction) {
-                        snakeSegments[x].src = './images/snake/body.png'
-                    } else {
-                        if (this.getRotation(this.sequence[x].direction) > this.getRotation(this.sequence[x - 1].direction)) {
-                            snakeSegments[x].src = './images/snake/body_turning_left.png'
+                if (snakeSegments.length > 1) {
+                    if (snakeSegments[x].src.includes('body')) {
+                        if (this.sequence[x].direction === this.sequence[x - 1].direction) {
+                            snakeSegments[x].src = './images/snake/body.png'
                         } else {
-                            snakeSegments[x].src = './images/snake/body_turning_right.png'
+                            if (this.getRotation(this.sequence[x].direction) < this.getRotation(this.sequence[x - 1].direction)) {
+                                snakeSegments[x].src = './images/snake/body_turning_right.png'
+                            } else {
+                                snakeSegments[x].src = './images/snake/body_turning_left.png'
+                            }
                         }
+                    } else if (snakeSegments[x].src.includes('tail')) {
+                        snakeSegments[x].style.transform = `rotate(${this.getRotation(this.sequence[x - 1].direction)}deg)`
                     }
                 }
             }
@@ -210,10 +219,8 @@ class Snake {
                 this.eatApple()
             }
         } else {
-            // game over, loss, made contact with wall or itself
-            console.log('game over')
-            alert('Game over!')
             this.board.gameOver = true
+            this.board.updateBoard()
         }
     }
 
@@ -231,20 +238,6 @@ class Snake {
         this.board.score += 1
         this.board.updateBoard()
     }
-}
-
-function shiftValuesDown(object) {
-    let keys = Object.keys(object);
-    let temp = '';
-    let newObject = {};
-
-    for (let i = 0; i < keys.length; i++) {
-        let currentValue = object[keys[i]];
-        newObject[keys[i]] = temp;
-        temp = currentValue;
-    }
-
-    return newObject;
 }
 
 class Functions {
@@ -282,33 +275,8 @@ class Functions {
 let functions = new Functions()
 
 function main() {
-    document.getElementById('score').innerText = '0'
-    document.getElementById('high-score').innerText = '0'
-
     let board = new Board(17, 15)
     let snake = new Snake(board)
-
-    fullscreenButton.addEventListener('click', (event) => {
-        alert('Fullscreened')
-    })
-
-    soundButton.addEventListener('click', (event) => {
-        soundEnabled = !soundEnabled
-
-        if (soundEnabled) {
-            document.getElementById('sound').src = './images/others/volume_on.png'
-        } else {
-            document.getElementById('sound').src = '/images/others/volume_off.png'
-        }
-    })
-
-    closeButton.addEventListener('click', (event) => {
-        alert('Closed')
-    })
-
-    gameContainer.addEventListener('contextmenu', (event) => {
-        // event.preventDefault()
-    });
 
     let snakeMovement = () => {
         snake.move()
@@ -363,5 +331,27 @@ function getKeyDirection(keyName) {
     }
     return direction
 }
+
+fullscreenButton.addEventListener('click', (event) => {
+    alert('Fullscreened')
+})
+
+soundButton.addEventListener('click', (event) => {
+    soundEnabled = !soundEnabled
+
+    if (soundEnabled) {
+        document.getElementById('sound').src = './images/others/volume_on.png'
+    } else {
+        document.getElementById('sound').src = '/images/others/volume_off.png'
+    }
+})
+
+closeButton.addEventListener('click', (event) => {
+    alert('Closed')
+})
+
+gameContainer.addEventListener('contextmenu', (event) => {
+    // event.preventDefault()
+});
 
 main()
