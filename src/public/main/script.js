@@ -84,7 +84,7 @@ class Snake {
         this.board = board
         this.previousDirection = 'east'
         this.direction = this.previousDirection
-        this.length = 3
+        this.length = 0
         this.sequence = []
         this.createSnake()
     }
@@ -94,20 +94,19 @@ class Snake {
         this.createBody('c8')
         this.createTail('b8')
 
-        let snakeSegments = Array.from(document.getElementsByClassName('snake-segment')).reverse()
+        let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
         snakeSegments.forEach((value, index) => {
-            snakeSegments[index].classList.add(`snake-segment-${index + 1}`)
-            this.sequence[value.parentNode.id] = `snake-segment-${snakeSegments.indexOf(value) + 1}`
-            this.sequence.push({ coordinate: value.parentElement.id, direction: this.direction })
+            this.sequence.push({ coordinate: value.parentElement, direction: this.direction })
         })
     }
 
     createHead(coordinate) {
         let element = document.createElement('img')
+        this.length += 1
+        element.id = `snake-segment-${this.length}`
         element.src = './images/snake/head.png'
         element.classList.add('head') // remove this maybe, prob not needed
         element.classList.add('snake')
-        element.classList.add('snake-segment')
         document.getElementById(coordinate).appendChild(element)
         this.head = element
         return element
@@ -115,18 +114,20 @@ class Snake {
 
     createBody(coordinate) {
         let element = document.createElement('img')
+        this.length += 1
+        element.id = `snake-segment-${this.length}`
         element.src = './images/snake/body.png'
         element.classList.add('snake')
-        element.classList.add('snake-segment')
         document.getElementById(coordinate).appendChild(element)
         return element
     }
 
     createTail(coordinate) {
         let element = document.createElement('img')
+        this.length += 1
+        element.id = `snake-segment-${this.length}`
         element.src = './images/snake/tail.png'
         element.classList.add('snake')
-        element.classList.add('snake-segment')
         document.getElementById(coordinate).appendChild(element)
         return element
     }
@@ -163,7 +164,7 @@ class Snake {
         return functions.decrement(coordinate[0]) + coordinate[1]
     }
 
-    rotate(newDirection) {
+    getRotation(newDirection) {
         let rotations = {
             'north': 270,
             'east': 0,
@@ -173,39 +174,44 @@ class Snake {
         return rotations[newDirection];
     }
 
-    getSegment(segmentName) {
-        let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
-        return Object.values(snakeSegments).find((value) => `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}` == segmentName)
-    }
-
     move() {
-        let snakeSegments = Array.from(document.getElementsByClassName('snake-segment')).sort()
+        let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
         let head = document.getElementsByClassName('head')[0]
         let newCoordinate = document.getElementById(this[this.direction](this.convertToCoordinate(head.parentElement.id)))
 
         if (this.direction !== this.previousDirection) {
-            let rotation = this.rotate(this.direction)
+            let rotation = this.getRotation(this.direction)
             document.getElementsByClassName('head')[0].style.transform = `rotate(${rotation}deg)`
             this.previousDirection = this.direction
         }
 
         if (newCoordinate && (newCoordinate.children.length == 0 || Array.from(newCoordinate.children)[0].classList.contains('apple'))) {
             newCoordinate.appendChild(head)
-            this.sequence.unshift({ coordinate: newCoordinate, direction: this.direction })
-            console.log(this.sequence)
-            // this.sequence[newCoordinate.id] = ''
-            // this.sequence = shiftValuesDown(this.sequence)
+            this.sequence.unshift({ direction: this.direction, coordinate: newCoordinate })
 
-            // Object.keys(this.sequence).forEach((key) => {
-            //     if (this.sequence[key] !== '') {
-            //         document.getElementById(key).appendChild(this.getSegment(this.sequence[key]))
-            //     }
-            // })
+            for (let x = 0; x < snakeSegments.length; x++) {
+                let rotation = this.getRotation(this.sequence[x].direction)
+                snakeSegments[x].style.transform = `rotate(${rotation}deg)`
+                this.sequence[x].coordinate.appendChild(snakeSegments[x])
+
+                if (snakeSegments.length > 1 && snakeSegments[x].src.includes('body')) {
+                    if (this.sequence[x].direction === this.sequence[x - 1].direction) {
+                        snakeSegments[x].src = './images/snake/body.png'
+                    } else {
+                        if (this.getRotation(this.sequence[x].direction) > this.getRotation(this.sequence[x - 1].direction)) {
+                            snakeSegments[x].src = './images/snake/body_turning_left.png'
+                        } else {
+                            snakeSegments[x].src = './images/snake/body_turning_right.png'
+                        }
+                    }
+                }
+            }
             if (Array.from(newCoordinate.children)[0].classList.contains('apple')) {
                 this.eatApple()
             }
         } else {
             // game over, loss, made contact with wall or itself
+            console.log('game over')
             alert('Game over!')
             this.board.gameOver = true
         }
