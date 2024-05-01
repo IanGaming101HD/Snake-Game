@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 
 let app = express();
-let port = 80;
+let port = 80; // 80: default, 443: https, 8080: http
 
 app.enable('trust proxy');
 app.set('etag', false);

@@ -12,8 +12,9 @@ class Board {
         this.x = x
         this.y = y
         this.squareType = Board.squareType
-        this.createBoard()
         this.gameOver = false
+        this.createBoard()
+        this.generateApple('m8')
     }
 
     createBoard() {
@@ -49,6 +50,19 @@ class Board {
             }
         }
     }
+
+    generateApple(coordinate) {
+        let element = document.createElement('img')
+        element.src = './images/fruits/apple.png'
+        element.classList.add('apple') // remove this maybe, prob not needed
+        document.getElementById(coordinate).appendChild(element)
+        return element
+    }
+
+    removeApple() {
+        let element = document.getElementsByClassName('apple')[0]
+        element.remove()
+    }
 }
 
 class Snake {
@@ -62,33 +76,49 @@ class Snake {
     }
 
     createSnake() {
-        let head = document.createElement('img')
-        let body = document.createElement('img')
-        let tail = document.createElement('img')
-
-        head.src = './images/snake/head.png'
-        body.src = './images/snake/body.png'
-        tail.src = './images/snake/tail.png'
-
-        head.classList.add('head')
-
-        head.classList.add('snake')
-        body.classList.add('snake')
-        tail.classList.add('snake')
-
-        head.classList.add('snake-segment')
-        body.classList.add('snake-segment')
-        tail.classList.add('snake-segment')
-
-        document.getElementById('d8').appendChild(head)
-        document.getElementById('c8').appendChild(body)
-        document.getElementById('b8').appendChild(tail)
+        this.createHead('d8')
+        this.createBody('c8')
+        this.createTail('b8')
 
         let snakeSegments = Array.from(document.getElementsByClassName('snake-segment'))
         snakeSegments.reverse().forEach((value, index) => {
             snakeSegments[index].classList.add(`snake-segment-${index + 1}`)
             this.sequence[value.parentNode.id] = `snake-segment-${snakeSegments.reverse().indexOf(value) + 1}`
         })
+    }
+
+    createHead(coordinate) {
+        let element = document.createElement('img')
+        element.src = './images/snake/head.png'
+        element.classList.add('head') // remove this maybe, prob not needed
+        element.classList.add('snake')
+        element.classList.add('snake-segment')
+        document.getElementById(coordinate).appendChild(element)
+        return element
+    }
+
+    createBody(coordinate) {
+        let element = document.createElement('img')
+        element.src = './images/snake/body.png'
+        element.classList.add('snake')
+        element.classList.add('snake-segment')
+        document.getElementById(coordinate).appendChild(element)
+    }
+
+    createTail(coordinate) {
+        let element = document.createElement('img')
+        element.src = './images/snake/tail.png'
+        element.classList.add('snake')
+        element.classList.add('snake-segment')
+        document.getElementById(coordinate).appendChild(element)
+    }
+
+    replaceBody(coordinate, direction) {
+        let element = document.getElementById(coordinate)
+    }
+
+    replaceBody(coordinate, direction) {
+        let element = document.getElementById(coordinate)
     }
 
     convertToCoordinate(string) {
@@ -141,23 +171,37 @@ class Snake {
             this.previousDirection = this.direction
         }
 
-        if (newCoordinate && newCoordinate.children.length == 0) {
+        if (newCoordinate && (newCoordinate.children.length == 0 || Array.from(newCoordinate.children)[0].classList.contains('apple'))) {
             newCoordinate.appendChild(head)
             this.sequence[newCoordinate.id] = ''
             this.sequence = shiftValuesDown(this.sequence)
-
-            console.log(this.sequence)
 
             Object.keys(this.sequence).forEach((key) => {
                 if (this.sequence[key] !== '') {
                     document.getElementById(key).appendChild(this.getSegment(this.sequence[key]))
                 }
             })
+            if (Array.from(newCoordinate.children)[0].classList.contains('apple')) {
+                this.eatApple()
+            }
         } else {
             // game over, loss, made contact with wall or itself
             alert('Game over!')
             this.board.gameOver = true
         }
+    }
+
+    eatApple() {
+        this.board.removeApple()
+        let coordinates = Array.from(document.getElementsByClassName('square')).map((coordinate) => coordinate.id)
+        let freeCoordinates = []
+        coordinates.forEach((coordinate) => {
+            if (Array.from(document.getElementById(coordinate).children).length === 0) {
+                freeCoordinates.push(coordinate)
+            }
+        })
+        let randomCoordinate = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)]
+        this.board.generateApple(randomCoordinate)
     }
 }
 
@@ -246,7 +290,7 @@ function main() {
         }
     }
 
-    let snakeInterval = setInterval(snakeMovement, 5000)
+    let snakeInterval = setInterval(snakeMovement, 200)
 
     document.addEventListener('keydown', (event) => {
         if (board.gameOver) return;
@@ -270,7 +314,7 @@ function main() {
         if (newDirection !== oldDirection) {
             snake.move()
             clearInterval(snakeInterval)
-            snakeInterval = setInterval(snakeMovement, 5000)
+            snakeInterval = setInterval(snakeMovement, 200)
         }
     })
 }
