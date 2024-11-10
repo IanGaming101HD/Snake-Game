@@ -1,21 +1,56 @@
 html {
     user-select: none;
-}
-
-.container {
     font-family: Arial, Helvetica, sans-serif;
 }
 
-h1 {
+.centre {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.game-container {
+    width: min-content;
+    transform: scale(1);
+}
+
+.header {
     text-align: center;
 }
 
-.board {
-    margin-left: 34.5%;
+.top-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1%;
+    padding: 1%;
+    background-color: #4a752c;
+}
+
+.header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.score-text {
+    color: #ffffff;
+}
+
+.button {
+    cursor: pointer;
+}
+
+.bottom-container {
+    border-width: 25px;
+    border-style: solid;
+    border-color: #578a34;
+    width: auto;
 }
 
 .row {
     display: flex;
+    flex-direction: row;
 }
 
 .square {
@@ -31,82 +66,17 @@ h1 {
     background-color: #a2d149;
 }
 
-.pieces {
-    margin-top: 1%;
-    margin-left: -1%;
-    height: 100%;
-    /* display: block;
-    text-align: center; */
-}
-
-.centre {
-    width: min-content;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 .right {
-    /* float: right; */
     margin-left: auto;
 }
 
 .score-text {
-    margin-left: 5%;
     font-size: 20px;
-    height: 3rem;
-    line-height: 3rem;
-}
-
-.fruit-container {
-    margin-left: 2%;
-}
-
-.trophy-container {
-    margin-left: 7.5%;
-}
-
-.sound-container {
-    margin-right: 2%;
-}
-
-.fullscreen-container {
-    margin-right: 2%;
-}
-
-.close-container {
-    margin-right: 2%;
-}
-
-.game-container {
-    transform: scale(1);
 }
 
 .apple {
-    max-width:100%;
-    max-height:100%;
-}
-
-.game-border {
-    border: 25px solid #578a34;
-    width: auto;
-}
-
-.game {
-    border: none;
-}
-
-.header-box {
-    height: 50px;
-    width: auto;
-    display: flex;
-    flex-direction: row;
-    background-color: #4a752c;
-}
-
-.header-container {
-    margin-top: 5px;
-    display: flex;
-    flex-direction: row;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .header-icon {
@@ -115,23 +85,4 @@ h1 {
 
 .fullscreen {
     transform: scale(1.5);
-    cursor: pointer;
-}
-
-.sound {
-    cursor: pointer;
-}
-
-.close {
-    cursor: pointer;
-}
-
-label {
-    color: #ffffff;
-}
-
-.close {
-    cursor: pointer;
-    margin-left: 2%;
-    margin-right: 1%;
 }

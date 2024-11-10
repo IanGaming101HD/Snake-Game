@@ -1,7 +1,14 @@
 tail gets replaced with new body and new tail is formed
 
 [ 
-    0: { coordinate: '',
-    direction: ''
-    },
-    ]
+    0: { 
+            coordinate: '',
+            direction: ''
+    }
+]
+
+10/11/24:
+It has been a while, it looks like its working logically but the body sometimes as it rotated
+doesn't look visually correct as it doesn't look like its connecting to the snake.
+Need to increase snake size when eating apples.
+Need to implement game over and winning screen.

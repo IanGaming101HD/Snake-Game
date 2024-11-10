@@ -1,40 +1,34 @@
 <!DOCTYPE html>
 
 <html>
-    <head>
-        <title>Snake</title>
-        <link rel='stylesheet' href='./public/main/style.css'>
-    </head>
 
-    <body>
-        <div class='container'>
-            <h1>Snake</h1>
-            <div id='game-container' class='game-container centre'>
-                <div class='header-box'>
-                    <div class='header-container fruit-container'>
-                        <img class='apple header-icon' src='./images/fruits/apple.png'>
-                        <label id='score' class='score-text' for='score'>0</label>
-                    </div>
-                    <div class='header-container trophy-container'>
-                        <img class='trophy header-icon' src='./images/others/trophy.png'>
-                        <label id='high-score' class='score-text' for='high-score'>0</label>
-                    </div>
-                    <div class='header-container fullscreen-container right'>
-                        <img id='fullscreen' class='fullscreen header-icon' src='./images/others/fullscreen-3.png'>
-                    </div>
-                    <div class='header-container sound-container'>
-                        <img id='sound' class='sound header-icon' src='./images/others/volume_on.png'>
-                        <!-- <img id='sound' class='sound header-icon' src='/images/others/volume_off.png' hidden> -->
-                    </div>
-                    <div class='header-container close-container'>
-                        <img id='close' class='close header-icon' src='./images/others/close.png'>
-                    </div>
+<head>
+    <title>Snake</title>
+    <link rel='stylesheet' href='./public/main/style.css'>
+</head>
+
+<body>
+    <div class='container'>
+        <h1 class='header'>Snake</h1>
+        <div id='game-container' class='game-container centre'>
+            <div class='top-container'>
+                <div class='header-container fruit-container'>
+                    <img class='apple header-icon' src='./public/main/images/fruits/apple.png'>
+                    <label id='score' class='score-text' for='score'>0</label>
                 </div>
-                <div class='game-border'>
-                    <div id='game' class='game'>
-                    </div>
+                <div class='header-container trophy-container'>
+                    <img class='trophy header-icon' src='./public/main/images/others/trophy.png'>
+                    <label id='high-score' class='score-text' for='high-score'>0</label>
                 </div>
+                <img id='fullscreen' class='fullscreen header-icon button right' src='./public/main/images/others/fullscreen_small.png'>
+                <img id='sound' class='sound header-icon button' src='./public/main/images/others/volume_on.png'>
+                <img id='close' class='close header-icon button' src='./public/main/images/others/close.png'>
             </div>
-            <script src='./public/main/script.js'></script>
-    </body>
+            <div class='bottom-container'>
+                <div id='grid' class='grid'></div>
+            </div>
+        </div>
+        <script src='./public/main/script.js'></script>
+</body>
+
 </html>
