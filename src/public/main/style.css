@@ -26,7 +26,7 @@ html {
     background-color: #4a752c;
 }
 
-.header-container {
+.icon-container {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -74,15 +74,68 @@ html {
     font-size: 20px;
 }
 
-.apple {
-    max-width: 100%;
-    max-height: 100%;
+.top-icon {
+    height: 40px;
 }
 
-.header-icon {
-    height: 40px;
+.apple {
+    width: 100%;
 }
 
 .fullscreen {
     transform: scale(1.5);
+}
+
+.menu-icon-containers {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    left: 30.5%;
+    top: 15%;
+    gap: 50%;
+}
+
+.menu-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.menu {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+}
+
+.menu-img {
+    border-radius: 15px;
+    background-color: #71c9f0;
+    margin-bottom: 5%;
+}
+
+.play-button {
+    /* position: absolute; */
+    font-size: 20px;
+    padding: 5%;
+    padding-left: 25%;
+    padding-right: 25%;
+    border-radius: 15px;
+    border: none;
+    color: #ffffff;
+    background-color: #1155cc;
+}
+
+.key-tip {
+    position: absolute;
+    top: 20%;
+    left: 40%;
+    width: 100px;
+    height: 100px;
+    padding: 2%;
+    border-radius: 20px;
+    background-color: #00000070;
 }
