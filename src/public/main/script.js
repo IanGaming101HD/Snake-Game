@@ -132,19 +132,22 @@ class Game {
       highScore.innerText = newHighScore;
       localStorage.setItem('high-score', newHighScore);
       console.log('Game Over!');
+
+      let menu = document.getElementById('menu');
+      menu.style.visibility = 'visible'
     }
   }
 
   generateApple(coordinate) {
     let element = document.createElement('img');
     element.src = './public/main/images/fruits/apple.png';
-    element.classList.add('apple'); // remove this maybe, prob not needed
+    element.classList.add('fruit'); // remove this maybe, prob not needed
     document.getElementById(coordinate).appendChild(element);
     return element;
   }
 
   removeApple(coordinate) {
-    let element = coordinate.getElementsByClassName('apple')[0];
+    let element = Array.from(coordinate.children).find((child) => child.classList.contains('fruit'));
     element.remove();
   }
 }
@@ -258,7 +261,7 @@ class Snake {
       this.previousDirection = this.direction;
     }
 
-    if (newCoordinate && (newCoordinate.children.length == 0 || Array.from(newCoordinate.children)[0].classList.contains('apple'))) {
+    if (newCoordinate && (newCoordinate.children.length == 0 || Array.from(newCoordinate.children)[0].classList.contains('fruit'))) {
       newCoordinate.appendChild(head);
       this.sequence.unshift({
         direction: this.direction,
@@ -286,7 +289,7 @@ class Snake {
           }
         }
       }
-      if (Array.from(newCoordinate.children)[0].classList.contains('apple')) {
+      if (Array.from(newCoordinate.children)[0].classList.contains('fruit')) {
         this.eatApple();
       }
     } else {
@@ -298,16 +301,11 @@ class Snake {
   eatApple() {
     this.game.removeApple(this.head.parentElement);
     let coordinates = Array.from(document.getElementsByClassName('square')).map((coordinate) => coordinate.id);
-    let freeCoordinates = [];
-    coordinates.forEach((coordinate) => {
-      if (Array.from(document.getElementById(coordinate).children).length === 0) {
-        freeCoordinates.push(coordinate);
-      }
-    });
+    let freeCoordinates =  coordinates.filter((coordinate) => Array.from(document.getElementById(coordinate).children).length === 0);
     let randomCoordinate = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
-    this.game.generateApple(randomCoordinate);
     this.game.score += 1;
     this.game.updateBoard();
+    this.game.generateApple(randomCoordinate);
   }
 }
 
@@ -341,63 +339,49 @@ document.addEventListener('DOMContentLoaded', (event) => {
   let game = new Game();
   game.startGame();
 
-  const fullscreenButton = document.getElementById('fullscreen-button');
+  let fullscreenButton = document.getElementById('fullscreen-button');
   fullscreenButton.addEventListener('click', (event) => {
     alert('Fullscreened');
   });
 
-  const soundButton = document.getElementById('sound-button');
+  let soundButton = document.getElementById('sound-button');
   soundButton.addEventListener('click', (event) => {
     updateSound();
   });
 
-  const closeButton = document.getElementById('close-button');
+  let closeButton = document.getElementById('close-button');
   closeButton.addEventListener('click', (event) => {
     alert('Closed');
   });
 
-  const gameContainer = document.getElementById('game-container');
+  let gameContainer = document.getElementById('game-container');
   gameContainer.addEventListener('contextmenu', (event) => {
     event.preventDefault();
   });
 
-  const playButton = document.getElementById('play-button');
+  let playButton = document.getElementById('play-button');
   playButton.addEventListener('click', (event) => {
     let menu = document.getElementById('menu');
     menu.style.visibility = 'hidden';
 
-    document.addEventListener(
-      'keydown',
-      (event) => {
-        let keyName = event.key;
-
-        if (['ArrowUp', 'w', 'ArrowRight', 'd', 'ArrowDown', 's', 'ArrowLeft', 'a'].includes(keyName)) {
-          let keyTip = document.getElementById('key-tip');
-          keyTip.style.visibility = 'hidden';
-
-          let oldDirection = game.snake.direction;
-          let newDirection = getKeyDirection(keyName);
-          let oppositeDirection = {
-            north: 'south',
-            south: 'north',
-            east: 'west',
-            west: 'east',
-          };
-
-          if (newDirection !== oppositeDirection[oldDirection]) {
-            game.snake.move()
-            game.snake.direction = newDirection;
-          } else {
-            return;
-          }
-
-          game.initEvents();
-        }
-      },
-      {
-        once: true,
-      }
-    );
+    let handleKeyDown = (event) => {
+        let { key } = event;
+        let directions = { north: 'south', south: 'north', east: 'west', west: 'east' };
+      
+        if (!['ArrowUp', 'w', 'ArrowRight', 'd', 'ArrowDown', 's'].includes(key)) return;
+      
+        let newDirection = getKeyDirection(key);
+        if (newDirection === directions[game.snake.direction]) return;
+      
+        document.getElementById('key-tip').style.visibility = 'hidden';
+        game.snake.move();
+        game.snake.direction = newDirection;
+        game.initEvents();
+      
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+      
+      document.addEventListener('keydown', handleKeyDown);
   });
   updateSound();
 });
