@@ -33,7 +33,7 @@ class Utility {
 class Game {
   constructor(x, y) {
     this.score = 0;
-    this.high_score = 0;
+    this.high_score = localStorage.getItem('high-score') ? localStorage.getItem('high-score') : 0;
     this.gameOver = false;
     this.x = x ? x : 17;
     this.y = y ? y : 15;
@@ -43,7 +43,22 @@ class Game {
 
   startGame() {
     this.snake = new Snake(this);
-    this.generateApple('m8');
+    this.snake.createDefaultSnake();
+
+    this.generateFruit('m8');
+  }
+
+  resetGame() {
+    let grid = document.getElementById('grid');
+    let fruits = Array.from(grid.getElementsByClassName('fruit'));
+    fruits.forEach((fruit) => {
+      fruit.remove();
+    });
+
+    this.score = 0;
+    this.gameOver = false;
+    this.snake.remove();
+    this.startGame();
   }
 
   initEvents() {
@@ -55,9 +70,8 @@ class Game {
       }
     };
 
-    // let ms = 200;
-    let ms = 5000;
-    let snakeInterval = setInterval(snakeMovement, ms);
+    let msDelay = 200;
+    let snakeInterval = setInterval(snakeMovement, msDelay);
 
     document.addEventListener('keydown', (event) => {
       if (this.gameOver) return;
@@ -84,7 +98,7 @@ class Game {
       if (newDirection !== oldDirection) {
         this.snake.move();
         clearInterval(snakeInterval);
-        snakeInterval = setInterval(snakeMovement, ms);
+        snakeInterval = setInterval(snakeMovement, msDelay);
       }
     });
   }
@@ -121,26 +135,34 @@ class Game {
         createSquare(`${alphabet[x]}${y}`, currentRow);
       }
     }
+
+    let highScores = Array.from(document.getElementsByClassName('high-score'));
+    highScores.forEach((highScore) => {
+      highScore.innerHTML = this.high_score;
+    });
   }
 
   updateBoard() {
-    let score = document.getElementById('score');
-    let highScore = document.getElementById('high-score');
-    score.innerText = this.score;
-    highScore.innerText = this.high_score;
+    let scores = Array.from(document.getElementsByClassName('score'));
+    scores.forEach((score) => {
+      score.innerHTML = this.score;
+    });
 
     if (this.gameOver) {
-      let newHighScore = this.score > this.high_score ? this.score : this.high_score;
-      highScore.innerText = newHighScore;
-      localStorage.setItem('high-score', newHighScore);
-      console.log('Game Over!');
+      this.high_score = this.score > this.high_score ? this.score : this.high_score;
+      localStorage.setItem('high-score', this.high_score);
+
+      let highScores = Array.from(document.getElementsByClassName('high-score'));
+      highScores.forEach((highScore) => {
+        highScore.innerHTML = this.high_score;
+      });
 
       let menu = document.getElementById('menu');
       menu.style.visibility = 'visible';
     }
   }
 
-  generateApple(coordinate) {
+  generateFruit(coordinate) {
     let element = document.createElement('img');
     element.src = './public/main/images/fruits/apple.png';
     element.classList.add('fruit');
@@ -148,7 +170,7 @@ class Game {
     return element;
   }
 
-  removeApple(coordinate) {
+  removeFruit(coordinate) {
     let element = Array.from(coordinate.children).find((child) => child.classList.contains('fruit'));
     element.remove();
   }
@@ -162,13 +184,12 @@ class Snake {
     this.length = 0;
     this.sequence = [];
     this.utility = new Utility();
-    this.createSnake();
   }
 
-  createSnake() {
-    this.createHead('d8');
-    this.createBody('c8');
-    this.createTail('b8');
+  createDefaultSnake() {
+    this.createSegment('head', 'd8');
+    this.createSegment('body', 'c8');
+    this.createSegment('tail', 'b8');
 
     let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
     snakeSegments.forEach((value, index) => {
@@ -179,35 +200,26 @@ class Snake {
     });
   }
 
-  createHead(coordinate) {
-    let element = document.createElement('img');
+  createSegment(type, coordinate) {
     this.length += 1;
+
+    let element = document.createElement('img');
     element.id = `snake-segment-${this.length}`;
-    element.src = './public/main/images/snake/head.png';
+    element.src = `./public/main/images/snake/${type}.png`;
     element.classList.add('snake');
     document.getElementById(coordinate).appendChild(element);
-    this.head = element;
+
+    if (type === 'head') {
+      this.head = element;
+    }
     return element;
   }
 
-  createBody(coordinate) {
-    let element = document.createElement('img');
-    this.length += 1;
-    element.id = `snake-segment-${this.length}`;
-    element.src = './public/main/images/snake/body.png';
-    element.classList.add('snake');
-    document.getElementById(coordinate).appendChild(element);
-    return element;
-  }
+  addBody() {
+    let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
+    snakeSegments[this.length - 1].src = `./public/main/images/snake/body.png`;
 
-  createTail(coordinate) {
-    let element = document.createElement('img');
-    this.length += 1;
-    element.id = `snake-segment-${this.length}`;
-    element.src = './public/main/images/snake/tail.png';
-    element.classList.add('snake');
-    document.getElementById(coordinate).appendChild(element);
-    return element;
+    this.createSegment('tail', this.sequence[this.length - 2].coordinate.id);
   }
 
   convertToCoordinate(string) {
@@ -245,60 +257,58 @@ class Snake {
   }
 
   move() {
-    let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
+    let snakeSegments = [...document.getElementsByClassName('snake')].sort((a, b) => a.id.localeCompare(b.id));
     let head = document.getElementById('snake-segment-1');
     let newCoordinate = document.getElementById(this[this.direction](this.convertToCoordinate(head.parentElement.id)));
 
-    if (this.direction !== this.previousDirection) {
-      let rotation = this.getRotation(this.direction);
+    let canMove = newCoordinate && (!newCoordinate.children.length || newCoordinate.firstElementChild.classList.contains('fruit'));
+    if (!canMove) {
+      this.game.gameOver = true;
+      this.game.updateBoard();
+      return;
+    }
 
-      head.style.transform = `rotate(${rotation}deg)`;
+    newCoordinate.appendChild(head);
+    this.sequence.unshift({ direction: this.direction, coordinate: newCoordinate });
+
+    if (this.direction !== this.previousDirection) {
+      head.style.transform = `rotate(${this.getRotation(this.direction)}deg)`;
       this.previousDirection = this.direction;
     }
 
-    if (newCoordinate && (newCoordinate.children.length == 0 || Array.from(newCoordinate.children)[0].classList.contains('fruit'))) {
-      newCoordinate.appendChild(head);
-      this.sequence.unshift({
-        direction: this.direction,
-        coordinate: newCoordinate,
-      });
+    snakeSegments.forEach((segment, i) => {
+      let currentDirection = this.sequence[i].direction;
+      let upcomingDirection = this.sequence[i - 1]?.direction;
+      let rotation = this.getRotation(currentDirection);
 
-      snakeSegments.forEach((snakeSegment, index) => {
-        if (snakeSegment.src.includes('body')) {
-          let rotation = this.getRotation(this.sequence[index].direction);
-          if (this.sequence[index].direction === this.sequence[index - 1].direction) {
-            snakeSegment.style.transform = `rotate(${rotation}deg)`;
-            snakeSegment.src = './public/main/images/snake/body.png';
-          } else {
-            let rotation = this.getRotation(this.sequence[index].direction);
-            snakeSegment.style.transform = `rotate(${rotation}deg)`;
-
-            if ([['north', 'west'], ['west', 'south'], ['south', 'east'], ['east', 'north']].some((arr) => arr.every((val, i) => val === [this.sequence[index].direction, this.sequence[index - 1].direction][i]))) {
-              snakeSegment.src = './public/main/images/snake/body_turning_left.png';
-            } else {
-              snakeSegment.src = './public/main/images/snake/body_turning_right.png';
-            }
-          }
-        } else if (snakeSegment.src.includes('tail')) {
-          rotation = `rotate(${this.getRotation(this.sequence[index - 1].direction)}deg)`;
+      if (segment.src.includes('body')) {
+        if (currentDirection !== upcomingDirection) {
+          let turnsLeft = [
+            ['north', 'west'],
+            ['west', 'south'],
+            ['south', 'east'],
+            ['east', 'north'],
+          ];
+          segment.src = turnsLeft.some((turn) => turn.every((v, i) => [currentDirection, upcomingDirection][i] === v)) ? './public/main/images/snake/body_turning_left.png' : './public/main/images/snake/body_turning_right.png';
+        } else {
+          segment.src = './public/main/images/snake/body.png';
         }
-        snakeSegment.style.transform = `rotate(${rotation}deg)`;
-
-        this.sequence[index].coordinate.appendChild(snakeSegment);
-      })
-
-      if (Array.from(newCoordinate.children)[0].classList.contains('fruit')) {
-        this.eatApple();
+      } else if (segment.src.includes('tail')) {
+        rotation = this.getRotation(upcomingDirection);
       }
-    } else {
-      this.game.gameOver = true;
-      this.game.updateBoard();
+
+      segment.style.transform = `rotate(${rotation}deg)`;
+      this.sequence[i].coordinate.appendChild(segment);
+    });
+
+    if (newCoordinate.firstElementChild?.classList.contains('fruit')) {
+      this.eatFruit();
     }
   }
 
-  eatApple() {
+  eatFruit() {
     let coordinate = this.head.parentElement;
-    this.game.removeApple(coordinate);
+    this.game.removeFruit(coordinate);
 
     let coordinates = Array.from(document.getElementsByClassName('square')).map((coordinate) => coordinate.id);
     let freeCoordinates = coordinates.filter((coordinate) => Array.from(document.getElementById(coordinate).children).length === 0);
@@ -306,7 +316,15 @@ class Snake {
 
     this.game.score += 1;
     this.game.updateBoard();
-    this.game.generateApple(randomCoordinate);
+    this.addBody();
+    this.game.generateFruit(randomCoordinate);
+  }
+
+  remove() {
+    let snakeSegments = [...document.getElementsByClassName('snake')];
+    snakeSegments.forEach((snakeSegment) => {
+      snakeSegment.remove();
+    });
   }
 }
 
@@ -362,6 +380,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
   let playButton = document.getElementById('play-button');
   playButton.addEventListener('click', (event) => {
+    game.resetGame();
+
     let menu = document.getElementById('menu');
     menu.style.visibility = 'hidden';
 

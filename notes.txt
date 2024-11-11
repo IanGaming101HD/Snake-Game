@@ -1,5 +1,11 @@
-tail gets replaced with new body and new tail is formed
+                NOTES:
+--------------------------------------
 
+
+Issues:
+- Tail gets replaced with new body and new tail is formed
+
+Example:
 [ 
     0: { 
             coordinate: '',
@@ -7,11 +13,11 @@ tail gets replaced with new body and new tail is formed
     }
 ]
 
-10/11/24:
-It has been a while, it looks like its working logically but the body sometimes as it rotated
-doesn't look visually correct as it doesn't look like its connecting to the snake.
-Need to increase snake size when eating apples.
-Need to implement game over and winning screen.
-
+Comments:
 11/11/24:
 I hate this north east etc I did, angles are easier to work with
+Need to implement game over and reset when pressing play, again.
+
+Added snake length increasing after eating fruit however visuals are affected and causes issues around 7 points (when length is 10).
+
+Found more issues, snake speeding up?
