@@ -55,14 +55,16 @@ class Game {
       }
     };
 
-    let snakeInterval = setInterval(snakeMovement, 200);
+    // let ms = 200;
+    let ms = 5000;
+    let snakeInterval = setInterval(snakeMovement, ms);
 
     document.addEventListener('keydown', (event) => {
       if (this.gameOver) return;
 
       let keyName = event.key;
-      let validKeys = ['ArrowUp', 'w', 'ArrowRight', 'd', 'ArrowDown', 's', 'ArrowLeft', 'a'];
-      if (!validKeys.includes(keyName)) return;
+      let validKeys = ['arrowup', 'w', 'arrowright', 'd', 'arrowdown', 's', 'arrowleft', 'a'];
+      if (!validKeys.includes(keyName.toLowerCase())) return;
 
       let oldDirection = this.snake.direction;
       let newDirection = getKeyDirection(keyName);
@@ -82,7 +84,7 @@ class Game {
       if (newDirection !== oldDirection) {
         this.snake.move();
         clearInterval(snakeInterval);
-        snakeInterval = setInterval(snakeMovement, 200);
+        snakeInterval = setInterval(snakeMovement, ms);
       }
     });
   }
@@ -134,7 +136,7 @@ class Game {
       console.log('Game Over!');
 
       let menu = document.getElementById('menu');
-      menu.style.visibility = 'visible'
+      menu.style.visibility = 'visible';
     }
   }
 
@@ -208,14 +210,6 @@ class Snake {
     return element;
   }
 
-  replaceBody(coordinate, direction) {
-    let element = document.getElementById(coordinate);
-  }
-
-  replaceBody(coordinate, direction) {
-    let element = document.getElementById(coordinate);
-  }
-
   convertToCoordinate(string) {
     return [string[0], string.slice(1)];
   }
@@ -257,6 +251,7 @@ class Snake {
 
     if (this.direction !== this.previousDirection) {
       let rotation = this.getRotation(this.direction);
+
       head.style.transform = `rotate(${rotation}deg)`;
       this.previousDirection = this.direction;
     }
@@ -268,27 +263,30 @@ class Snake {
         coordinate: newCoordinate,
       });
 
-      for (let x = 0; x < snakeSegments.length; x++) {
-        let rotation = this.getRotation(this.sequence[x].direction);
-        snakeSegments[x].style.transform = `rotate(${rotation}deg)`;
-        this.sequence[x].coordinate.appendChild(snakeSegments[x]);
+      snakeSegments.forEach((snakeSegment, index) => {
+        if (snakeSegment.src.includes('body')) {
+          let rotation = this.getRotation(this.sequence[index].direction);
+          if (this.sequence[index].direction === this.sequence[index - 1].direction) {
+            snakeSegment.style.transform = `rotate(${rotation}deg)`;
+            snakeSegment.src = './public/main/images/snake/body.png';
+          } else {
+            let rotation = this.getRotation(this.sequence[index].direction);
+            snakeSegment.style.transform = `rotate(${rotation}deg)`;
 
-        if (snakeSegments.length > 1) {
-          if (snakeSegments[x].src.includes('body')) {
-            if (this.sequence[x].direction === this.sequence[x - 1].direction) {
-              snakeSegments[x].src = './public/main/images/snake/body.png';
+            if ([['north', 'west'], ['west', 'south'], ['south', 'east'], ['east', 'north']].some((arr) => arr.every((val, i) => val === [this.sequence[index].direction, this.sequence[index - 1].direction][i]))) {
+              snakeSegment.src = './public/main/images/snake/body_turning_left.png';
             } else {
-              if (this.getRotation(this.sequence[x].direction) < this.getRotation(this.sequence[x - 1].direction)) {
-                snakeSegments[x].src = './public/main/images/snake/body_turning_right.png';
-              } else {
-                snakeSegments[x].src = './public/main/images/snake/body_turning_left.png';
-              }
+              snakeSegment.src = './public/main/images/snake/body_turning_right.png';
             }
-          } else if (snakeSegments[x].src.includes('tail')) {
-            snakeSegments[x].style.transform = `rotate(${this.getRotation(this.sequence[x - 1].direction)}deg)`;
           }
+        } else if (snakeSegment.src.includes('tail')) {
+          rotation = `rotate(${this.getRotation(this.sequence[index - 1].direction)}deg)`;
         }
-      }
+        snakeSegment.style.transform = `rotate(${rotation}deg)`;
+
+        this.sequence[index].coordinate.appendChild(snakeSegment);
+      })
+
       if (Array.from(newCoordinate.children)[0].classList.contains('fruit')) {
         this.eatApple();
       }
@@ -299,11 +297,11 @@ class Snake {
   }
 
   eatApple() {
-    let coordinate = this.head.parentElement
+    let coordinate = this.head.parentElement;
     this.game.removeApple(coordinate);
-    
+
     let coordinates = Array.from(document.getElementsByClassName('square')).map((coordinate) => coordinate.id);
-    let freeCoordinates =  coordinates.filter((coordinate) => Array.from(document.getElementById(coordinate).children).length === 0);
+    let freeCoordinates = coordinates.filter((coordinate) => Array.from(document.getElementById(coordinate).children).length === 0);
     let randomCoordinate = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
 
     this.game.score += 1;
@@ -314,13 +312,13 @@ class Snake {
 
 function getKeyDirection(keyName) {
   let direction;
-  if (['ArrowUp', 'w'].includes(keyName)) {
+  if (['ArrowUp', 'w'].includes(keyName.toLowerCase())) {
     direction = 'north';
-  } else if (['ArrowRight', 'd'].includes(keyName)) {
+  } else if (['ArrowRight', 'd'].includes(keyName.toLowerCase())) {
     direction = 'east';
-  } else if (['ArrowDown', 's'].includes(keyName)) {
+  } else if (['ArrowDown', 's'].includes(keyName.toLowerCase())) {
     direction = 'south';
-  } else if (['ArrowLeft', 'a'].includes(keyName)) {
+  } else if (['ArrowLeft', 'a'].includes(keyName.toLowerCase())) {
     direction = 'west';
   }
   return direction;
@@ -368,23 +366,23 @@ document.addEventListener('DOMContentLoaded', (event) => {
     menu.style.visibility = 'hidden';
 
     let handleKeyDown = (event) => {
-        let { key } = event;
-        let directions = { north: 'south', south: 'north', east: 'west', west: 'east' };
-      
-        if (!['ArrowUp', 'w', 'ArrowRight', 'd', 'ArrowDown', 's'].includes(key)) return;
-      
-        let newDirection = getKeyDirection(key);
-        if (newDirection === directions[game.snake.direction]) return;
-      
-        document.getElementById('key-tip').style.visibility = 'hidden';
-        game.snake.move();
-        game.snake.direction = newDirection;
-        game.initEvents();
-      
-        document.removeEventListener('keydown', handleKeyDown);
-      };
-      
-      document.addEventListener('keydown', handleKeyDown);
+      let { key } = event;
+      let directions = { north: 'south', south: 'north', east: 'west', west: 'east' };
+
+      if (!['arrowup', 'w', 'arrowright', 'd', 'arrowdown', 's'].includes(key.toLowerCase())) return;
+
+      let newDirection = getKeyDirection(key);
+      if (newDirection === directions[game.snake.direction]) return;
+
+      document.getElementById('key-tip').style.visibility = 'hidden';
+      game.snake.move();
+      game.snake.direction = newDirection;
+      game.initEvents();
+
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
   });
   updateSound();
 });

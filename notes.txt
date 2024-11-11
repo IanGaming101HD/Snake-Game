@@ -12,3 +12,6 @@ It has been a while, it looks like its working logically but the body sometimes 
 doesn't look visually correct as it doesn't look like its connecting to the snake.
 Need to increase snake size when eating apples.
 Need to implement game over and winning screen.
+
+11/11/24:
+I hate this north east etc I did, angles are easier to work with
