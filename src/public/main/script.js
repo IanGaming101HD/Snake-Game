@@ -141,7 +141,7 @@ class Game {
   generateApple(coordinate) {
     let element = document.createElement('img');
     element.src = './public/main/images/fruits/apple.png';
-    element.classList.add('fruit'); // remove this maybe, prob not needed
+    element.classList.add('fruit');
     document.getElementById(coordinate).appendChild(element);
     return element;
   }
@@ -299,10 +299,13 @@ class Snake {
   }
 
   eatApple() {
-    this.game.removeApple(this.head.parentElement);
+    let coordinate = this.head.parentElement
+    this.game.removeApple(coordinate);
+    
     let coordinates = Array.from(document.getElementsByClassName('square')).map((coordinate) => coordinate.id);
     let freeCoordinates =  coordinates.filter((coordinate) => Array.from(document.getElementById(coordinate).children).length === 0);
     let randomCoordinate = freeCoordinates[Math.floor(Math.random() * freeCoordinates.length)];
+
     this.game.score += 1;
     this.game.updateBoard();
     this.game.generateApple(randomCoordinate);
