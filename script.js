@@ -164,7 +164,7 @@ class Game {
 
   generateFruit(coordinate) {
     let element = document.createElement('img');
-    element.src = './public/main/images/fruits/apple.png';
+    element.src = './images/fruits/apple.png';
     element.classList.add('fruit');
     document.getElementById(coordinate).appendChild(element);
     return element;
@@ -205,7 +205,7 @@ class Snake {
 
     let element = document.createElement('img');
     element.id = `snake-segment-${this.length}`;
-    element.src = `./public/main/images/snake/${type}.png`;
+    element.src = `./images/snake/${type}.png`;
     element.classList.add('snake');
     document.getElementById(coordinate).appendChild(element);
 
@@ -217,7 +217,7 @@ class Snake {
 
   addBody() {
     let snakeSegments = Array.from(document.getElementsByClassName('snake')).sort((a, b) => (a.id > b.id ? 1 : b.id > a.id ? -1 : 0));
-    snakeSegments[this.length - 1].src = `./public/main/images/snake/body.png`;
+    snakeSegments[this.length - 1].src = `./images/snake/body.png`;
 
     this.createSegment('tail', this.sequence[this.length - 2].coordinate.id);
   }
@@ -289,9 +289,9 @@ class Snake {
             ['south', 'east'],
             ['east', 'north'],
           ];
-          segment.src = turnsLeft.some((turn) => turn.every((v, i) => [currentDirection, upcomingDirection][i] === v)) ? './public/main/images/snake/body_turning_left.png' : './public/main/images/snake/body_turning_right.png';
+          segment.src = turnsLeft.some((turn) => turn.every((v, i) => [currentDirection, upcomingDirection][i] === v)) ? './images/snake/body_turning_left.png' : './images/snake/body_turning_right.png';
         } else {
-          segment.src = './public/main/images/snake/body.png';
+          segment.src = './images/snake/body.png';
         }
       } else if (segment.src.includes('tail')) {
         rotation = this.getRotation(upcomingDirection);
@@ -348,9 +348,9 @@ function updateSound() {
   localStorage.setItem('sound', !soundEnabled);
 
   if (soundEnabled) {
-    sound.src = './public/main/images/other/volume_on.png';
+    sound.src = './images/other/volume_on.png';
   } else {
-    sound.src = './public/main/images/other/volume_off.png';
+    sound.src = './images/other/volume_off.png';
   }
 }
 
